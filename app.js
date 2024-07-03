@@ -3,9 +3,28 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+//mysql 연결
+var mysql = require('mysql');
+
+var db = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: '1234',
+  database: 'coffeesite',
+  port: 3306
+})
+
+db.connect(function(err) {
+  if (err) {
+    console.error('Database connection failed: ' + err.stack);
+    return;
+  }
+  console.log('Connected to database.');
+});
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var loginRouter = require('./routes/order');   // login 라우터 추가
 
 var app = express();
 
@@ -22,6 +41,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/order', loginRouter);   // login 라우터 사용
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
