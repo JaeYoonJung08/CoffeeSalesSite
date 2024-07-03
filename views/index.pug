@@ -1,5 +1,7 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  div(style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column;")
+    a(href="/order" style="margin-bottom: 10px;") 주문하러 가기
+    a(style="margin-bottom: 10px;") 판매목록과 가격
+    a(style="margin-bottom: 10px;") 주문현황
