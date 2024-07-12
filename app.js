@@ -24,7 +24,8 @@ db.connect(function(err) {
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var loginRouter = require('./routes/order');   // login 라우터 추가
+var orderRouter = require('./routes/order');   // login 라우터 추가
+var orderItemRouter = require('./routes/order_item')
 
 var app = express();
 
@@ -41,7 +42,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/order', loginRouter);   // login 라우터 사용
+app.use('/order', orderRouter);   // login 라우터 사용
+app.use('/orderitem', orderItemRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
