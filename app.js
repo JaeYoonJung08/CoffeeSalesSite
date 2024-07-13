@@ -3,6 +3,10 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+
+
+var app = express();
+
 //mysql 연결
 var mysql = require('mysql');
 
@@ -22,12 +26,20 @@ db.connect(function(err) {
   console.log('Connected to database.');
 });
 
+// MySQL 연결을 모든 라우터에서 사용할 수 있도록 설정
+app.use((req, res, next) => {
+  req.db = db;
+  next();
+});
+
+//------------------
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var orderRouter = require('./routes/order');   // login 라우터 추가
 var orderItemRouter = require('./routes/order_item')
 
-var app = express();
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -45,7 +57,7 @@ app.use('/users', usersRouter);
 app.use('/order', orderRouter);   // login 라우터 사용
 app.use('/orderitem', orderItemRouter);
 
-
+ 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
