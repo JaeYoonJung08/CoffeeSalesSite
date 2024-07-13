@@ -1,17 +1,67 @@
 block content
 div(style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column;")
     h1(style="display: flex; justify-content: center;") 이 페이지는 메뉴항목을 추가하기 위한 페이지입니다.
-    input(type="text" placeholder="메뉴이름을 작성해주세요" style="margin-bottom: 10px; padding: 5px; width: 200px;")
-    input(type="text" placeholder="가격을 입력해주세요" style="margin-bottom: 10px; padding : 5px; width: 200px;")
-    form(action="#")
-        label(for="lang"  style="margin-right : 5px;") 카테고리
-        select(name="카테고리들" )   
+    input(type="text" id="menuName" placeholder="메뉴이름을 작성해주세요" style="margin-bottom: 10px; padding: 5px; width: 200px;")
+    input(type="text" id="menuPrice" placeholder="가격을 입력해주세요" style="margin-bottom: 10px; padding : 5px; width: 200px;")
+    div(style="display: flex; align-items: center; margin-bottom: 10px;")
+        label(for="category" style="margin-right : 5px;") 카테고리
+        select(id="category" name="카테고리들")   
             option(value="카페") 카페
-            option(value="카페") 차
-            option(value="카페") 음료
-            option(value="카페") 제과
-            option(value="카페") 상품
-            option(value="카페") 세트메뉴
-            option(value="카페") 상품권
-            option(value="카페") 무선인터넷
-    button(style="padding: 5px 10px;") 메뉴항목 추가
+            option(value="차") 차
+            option(value="음료") 음료
+            option(value="제과") 제과
+            option(value="상품") 상품
+            option(value="세트메뉴") 세트메뉴
+            option(value="상품권") 상품권
+            option(value="무선인터넷") 무선인터넷
+    div(style="display: flex; align-items: center; margin-bottom: 10px;")
+        button(id="submitButton" style="padding: 5px 10px; margin-right: 10px;") 메뉴항목 추가
+        button(id="backButton" style="padding: 5px 10px;") 돌아가기
+
+script.
+    document.getElementById('submitButton').addEventListener('click', () => {
+        const menuName = document.getElementById('menuName').value;
+        const menuPrice = document.getElementById('menuPrice').value;
+        const category = document.getElementById('category').value;
+
+        const data = {
+            menuName: menuName,
+            menuPrice: menuPrice,
+            category: category
+        };
+
+        fetch('/orderitem/add-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            //response.ok가 false인 경우, 응답 데이터를 JSON으로 변환한 후 에러 메시지를 확인
+            if (!response.ok) 
+            {
+                return response.json().then(errorData => {
+                    // 중복된 항목일 경우 다이얼로그 표시
+                    if (response.status === 400 && errorData.message === '이미 존재하는 아이템입니다') {
+                        alert('이미 존재하는 아이템입니다');
+                    } else {
+                        throw new Error(errorData.message || 'Something went wrong');
+                    }
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Success:', data);
+             alert('메뉴항목에 추가되었습니다');
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('오류가 발생했습니다' + error.message);
+        });
+    });
+
+    document.getElementById('backButton').addEventListener('click', () => {
+        window.location.href = '/'; // 루트 경로로 리디렉션
+    })
