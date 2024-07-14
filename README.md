@@ -43,3 +43,11 @@ git checkout develop
 git merge feature/new-feature
 ```
 
+### Git node_modules 제거
+```sh
+# 캐시 제거
+git rm -r --cached node_modules
+# 변경 사항 커밋
+git commit -m "Update .gitignore to exclude node_modules"
+```
+
