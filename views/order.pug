@@ -1,6 +1,110 @@
-block content
-  div(style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column;")
-  
-  div(style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column;")
-    input(type="text" placeholder="메뉴이름을 작성해주세요" style="margin-bottom: 10px; padding: 5px; width: 200px;")
-    button(style="padding: 5px 10px;") 주문
+doctype html
+html
+  head
+    title 카테고리 선택
+    script(src="https://code.jquery.com/jquery-3.6.0.min.js")
+    style.
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      .container {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+      }
+      table {
+        margin-top: 20px;
+        border-collapse: collapse;
+        float: left;
+      }
+      th, td {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      .form-container {
+        margin-left: 50px;
+      }
+  body
+    block content
+      div.container
+        div
+          label(for="category" style="margin-right: 5px; margin-bottom: 10px") 카테고리
+            select(id="category" name="카테고리들" style="margin-left: 5px")   
+              option(value="카페") 카페
+              option(value="차") 차
+              option(value="음료") 음료
+              option(value="제과") 제과
+              option(value="상품") 상품
+              option(value="세트메뉴") 세트메뉴
+              option(value="상품권") 상품권
+              option(value="무선인터넷") 무선인터넷
+          button(id="query-btn" style="padding: 5px 10px; margin-top: 10px;") 조회
+          div#result
+            table#data-table(style="display: none;")
+              thead
+                tr
+                  th 카테고리
+                  th 메뉴이름
+                  th 가격
+              tbody
+        div.form-container
+          div
+            input#username(type="text" placeholder="고객이름을 작성해주세요" style="padding: 5px; width: 200px; margin-bottom:5px;")
+          div
+            input#useraddress(type="text" placeholder="주소를 입력해주세요" style="padding: 5px; width: 200px; margin-bottom:5px;")
+          div
+            input#userphone(type="text" placeholder="전화번호를 입력해주세요" style="padding: 5px; width: 200px; margin-bottom:5px;")
+          div(style="display: flex; justify-content: center;")
+            button#orderbutton(style="padding: 5px 10px; ") 주문
+    script.
+      $(document).ready( () => {
+        //조회버튼
+        $('#query-btn').on('click', function() {
+          const selectedCategory = $('#category').val();
+          fetch('/order/list', {
+            method: 'POST',
+            headers: {
+              'Content-Type' : 'application/json'
+            },
+            body: JSON.stringify({selectedCategory : selectedCategory})
+          })
+          .then(response => response.json())
+          .then(data =>  {
+            const tableBody = $('#data-table tbody');
+            tableBody.empty();
+
+            if (data.length > 0) {
+              data.forEach(item => {
+                const row = $('<tr>');
+                row.append($('<td>').text(selectedCategory));
+                row.append($('<td>').text(item.item_name));
+                row.append($('<td>').text(item.item_price));
+                tableBody.append(row);
+              });
+              $('#data-table').show();
+            } else {
+              $('#data-table').hide();
+            }
+          })
+          .catch(error => {
+            console.error('데이터 가져오기 중 오류 발생', error);
+
+          });
+        });
+
+        //주문버튼
+        $('orderbutton').on('click' () => {
+          //1. 사용자 정보 저장 or 가져오기
+          const username = $('#username').val()
+          const useraddress = $('#useraddress').val()
+          const userphone = $('#userphone').val()
+        })
+
+      });
