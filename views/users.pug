@@ -1,0 +1,56 @@
+block content
+div(style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column;")
+    h1(style="display: flex; justify-content: center;") 이 페이지는 사용자의 정보를 입력하는 페이지입니다.
+    input(type="text" id="userName" placeholder="이름을 작성해주세요" style="margin-bottom: 10px; padding: 5px; width: 200px;")
+    input(type="text" id="useraddress" placeholder="주소를 입력해주세요" style="margin-bottom: 10px; padding : 5px; width: 200px;")
+    input(type="text" id="userphone" placeholder="휴대폰번호를 입력해주세요" style="margin-bottom: 10px; padding : 5px; width: 200px;")
+    div(style="display: flex; align-items: center; margin-bottom: 10px;")
+        button(id="usersubButton" style="padding: 5px 10px; margin-right: 10px;") 사용자 추가
+        button(id="backButton" style="padding: 5px 10px;") 돌아가기
+
+script.
+    document.getElementById('usersubButton').addEventListener('click', () => {
+        const userName = document.getElementById('userName').value;
+        const useraddress = document.getElementById('useraddress').value;
+        const userphone = document.getElementById('userphone').value;
+
+        console.log(userName);
+        const userdata = {
+            userName : userName,
+            useraddress : useraddress,
+            userphone : userphone
+        };
+
+        fetch('/users/profile', {
+            method : 'POST',
+            headers : {
+                'Content-Type' : 'application/json'
+            },
+            body: JSON.stringify(userdata)
+        })
+        .then(response => {
+            if (!response.ok){
+                return response.json().then(errorData => {
+                    if (response.status == 400 && errorData.message === '이미 등록된 사용자입니다.')
+                          alert('이미 등록된 사용자입니다');
+                    else 
+                        throw new Error(errorData.message || 'Something went wrong');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data)            
+            {
+                console.log('Success users :' , data);
+                alert('사용자가 등록되었습니다.');
+            }
+        })
+        .catch((error) => {
+            alert('오류가 발생했습니다.');
+        })
+    })
+
+    document.getElementById('backButton').addEventListener('click', () => {
+        window.location.href = '/';
+    })
